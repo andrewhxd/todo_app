@@ -66,16 +66,8 @@ Added a custom `get` route with the helper name `new_todo`, and excluded the def
 
 In `config/routes.rb`:
 ```ruby
-Rails.application.routes.draw do
-  resources :todos, except: [:new]
-
   # add a new route new_todo
   get "new_todo", to: "todos#new", as: :new_todo
-
-  get "hello" => "todos#hello"
-
-  get "up" => "rails/health#show", as: :rails_health_check
-end
 ```
 
 - `resources :todos, except: [:new]` — prevents Rails from auto-creating the default `GET /todos/new` route, which otherwise reserves the `new_todo_path` helper name.
@@ -94,4 +86,27 @@ new_todo GET /new_todo(.:format) todos#new
 
 ## 3. Set the homepage
 
-_Not yet done — will add once completed._
+### Files changed
+- `config/routes.rb`
+
+### Steps & code
+
+Added a `root` route so visiting `/` renders the todos index page instead of the default Rails welcome page.
+
+In `config/routes.rb`:
+```ruby
+root "todos#index"
+```
+
+- `root` is Rails' special helper for the `/` URL.
+- `"todos#index"` tells Rails to run the `index` action of `TodosController` when someone visits `/`.
+
+### Verify
+```
+rails routes -g root
+```
+Should show:
+```
+root GET /  todos#index
+```
+Visiting `http://localhost:3000/` in the browser now renders the todos index page.
