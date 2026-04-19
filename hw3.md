@@ -110,3 +110,53 @@ Should show:
 root GET /  todos#index
 ```
 Visiting `http://localhost:3000/` in the browser now renders the todos index page.
+
+---
+
+# Part 2 — Deploy to Heroku
+
+## Split database gems by environment
+
+### Files changed
+- `Gemfile`
+- `Gemfile.lock` (auto-updated by `bundle install`)
+
+**Added a new `:production` group** at the bottom of `Gemfile`:
+```ruby
+group :production do
+  # Use PostgreSQL as the database for Active Record (production only, for Heroku)
+  gem "pg", "~> 1.1"
+end
+```
+
+**Ran `bundle install`** to update `Gemfile.lock` with the `pg` gem.
+
+## Update `config/database.yml` for Postgres in production
+
+### Files changed
+- `config/database.yml`
+
+### Why
+The production block was hardcoded to SQLite, which would crash on Heroku (sqlite3 gem is no longer in production, and Heroku's filesystem is ephemeral). Rails 8 also uses four logical databases in production (primary, cache, queue, cable) for Solid Cache/Queue/Cable. Heroku's `essential-0` plan gives one Postgres DB, so all four point at the same `DATABASE_URL`.
+
+### Change
+Replaced the production block so it uses `adapter: postgresql` and reads Heroku's `DATABASE_URL`:
+```yaml
+production:
+  primary: &primary_production
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>
+  cache:
+    <<: *primary_production
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    migrations_paths: db/cable_migrate
+```
+Development and test still use SQLite — unchanged.
+
+
+
