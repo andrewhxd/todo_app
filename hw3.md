@@ -73,14 +73,6 @@ In `config/routes.rb`:
 - `resources :todos, except: [:new]` — prevents Rails from auto-creating the default `GET /todos/new` route, which otherwise reserves the `new_todo_path` helper name.
 - `get "new_todo", to: "todos#new", as: :new_todo` — defines the URL `/new_todo`, routes it to `TodosController#new`, and creates the helper `new_todo_path`.
 
-### Verify
-```
-rails routes -g new_todo
-```
-Should show:
-```
-new_todo GET /new_todo(.:format) todos#new
-```
 
 ---
 
@@ -98,26 +90,12 @@ In `config/routes.rb`:
 root "todos#index"
 ```
 
-- `root` is Rails' special helper for the `/` URL.
-- `"todos#index"` tells Rails to run the `index` action of `TodosController` when someone visits `/`.
-
-### Verify
-```
-rails routes -g root
-```
-Should show:
-```
-root GET /  todos#index
-```
-Visiting `http://localhost:3000/` in the browser now renders the todos index page.
 
 ---
 
 # Part 2 — Deploy to Heroku
 
-
 https://todolist397-04ff820efcb2.herokuapp.com/
-
 
 ## Split database gems by environment
 
@@ -160,7 +138,6 @@ production:
     <<: *primary_production
     migrations_paths: db/cable_migrate
 ```
-Development and test still use SQLite — unchanged.
 
 
 
