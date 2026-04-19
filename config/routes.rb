@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
-  resources :todos
+  resources :todos, except: [:new]
+
+  # add a new route new_todo
+  get "new_todo", to: "todos#new", as: :new_todo
+
+
   get "hello" => "todos#hello"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
